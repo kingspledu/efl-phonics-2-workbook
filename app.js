@@ -1,5 +1,12 @@
 const $ = (id) => document.getElementById(id);
 const state = { pages: [], index: 0, active: null, audio: null, context: null, source: null, gain: null, lastButton: null };
+const PHONICS = new Set(['an','at','ap','ad','am','ip','it','ix','ib','id','ig','in','et','ed','en','og','ot','op','ox','ug','ub','up','un','ud','ut']);
+function phonicsKey(text) {
+  const normalized = text.trim().toLowerCase().replace(/^[~\-]+/, '').replace(/[^a-z]/g, '');
+  if (/^[a-z]$/.test(normalized) && /^[\s~\-]*[a-z][\s.!?]*$/i.test(text)) return normalized;
+  if (PHONICS.has(normalized) && /^[\s~\-]*[a-z]{2}[\s.!?]*$/i.test(text)) return normalized;
+  return null;
+}
 
 async function init() {
   try {
@@ -64,6 +71,23 @@ function showPage(index) {
     item.addEventListener('click', () => selectSegment(segmentIndex, hotspot));
     list.append(item);
   });
+  for (const entry of (READING_REGIONS[page.page] || [])) {
+    const hotspot = document.createElement('button');
+    hotspot.type = 'button';
+    hotspot.className = `text-hotspot ${entry.kind}-hotspot`;
+    hotspot.style.cssText = `left:${entry.x * 100}%;top:${entry.y * 100}%;width:${entry.w * 100}%;height:${entry.h * 100}%`;
+    hotspot.setAttribute('aria-label', `${entry.kind === 'answer' ? '빈칸 정답' : '그림'}: ${entry.text} 듣기`);
+    hotspot.title = `${entry.kind === 'answer' ? '정답' : '그림'}: ${entry.text}`;
+    hotspot.addEventListener('click', () => selectAnswer(entry.text, hotspot));
+    layer.append(hotspot);
+    if (entry.kind === 'answer') {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.textContent = `정답 · ${entry.text}`;
+      item.addEventListener('click', () => selectAnswer(entry.text, hotspot));
+      list.append(item);
+    }
+  }
   const selectedThumb = $('thumbnails').children[index];
   for (const button of $('thumbnails').children) button.classList.remove('active');
   selectedThumb.classList.add('active');
@@ -81,6 +105,16 @@ function selectSegment(index, button) {
   speak();
 }
 
+function selectAnswer(text, button) {
+  if (state.lastButton) state.lastButton.classList.remove('active');
+  state.lastButton = button;
+  button.classList.add('active');
+  state.active = null;
+  $('activeText').textContent = text;
+  $('textEdit').value = text;
+  speak();
+}
+
 function stopAudio() {
   if (state.audio) { state.audio.pause(); state.audio.currentTime = 0; state.audio = null; }
   speechSynthesis.cancel();
@@ -90,12 +124,14 @@ async function speak() {
   stopAudio();
   const text = $('textEdit').value.trim();
   if (!text) return;
+  const phonics = phonicsKey(text);
   const segment = state.active === null ? null : state.pages[state.index].segments[state.active];
   const recorded = segment && segment.text === text && /[A-Za-z]/.test(text);
-  if (recorded) {
+  const answerWord = !recorded && !phonics && /^[a-z]+$/i.test(text) ? text.toLowerCase() : null;
+  if (phonics || recorded || answerWord) {
     const page = String(state.index + 1).padStart(2, '0');
     const number = String(state.active).padStart(3, '0');
-    const audio = new Audio(`audio/${page}-${number}.wav`);
+    const audio = new Audio(phonics ? `audio/phonics/${phonics}.wav` : recorded ? `audio/${page}-${number}.wav` : `audio/words/${answerWord}.wav`);
     audio.preload = 'auto';
     audio.playbackRate = 0.8;
     audio.preservesPitch = true;
@@ -111,11 +147,11 @@ async function speak() {
       return;
     } catch { /* If pre-recorded audio is missing, use the browser voice below. */ }
   }
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'en-US';
+  const utterance = new SpeechSynthesisUtterance(phonics === 'og' ? '오그' : text);
+  utterance.lang = phonics === 'og' ? 'ko-KR' : 'en-US';
   utterance.rate = 0.8;
   utterance.volume = 1;
-  const voice = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith('en'));
+  const voice = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith(phonics === 'og' ? 'ko' : 'en'));
   if (voice) utterance.voice = voice;
   speechSynthesis.speak(utterance);
 }

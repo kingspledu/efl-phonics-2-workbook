@@ -7,6 +7,7 @@
   <title>EFL Phonics 2 Workbook · 읽어주는 웹 교재</title>
   <meta name="description" content="EFL Phonics 2 Workbook 페이지를 보고 영어 단어와 문장을 눌러 들어보세요.">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="reading-map.css">
 </head>
 <body>
   <header class="app-header">
@@ -16,12 +17,13 @@
   <nav class="thumbnail-nav" aria-label="페이지 썸네일"><div id="thumbnails" class="thumbnail-track"></div></nav>
   <main class="layout">
     <section class="viewer" aria-label="워크북 페이지">
-      <div class="viewer-toolbar"><div><h1 id="pageTitle">페이지 불러오는 중</h1><p>영어 단어나 문장을 누르면 천천히 읽어 줍니다.</p></div><div class="pager"><button id="prevButton" type="button" aria-label="이전 페이지">←</button><span id="pageCount">- / -</span><button id="nextButton" type="button" aria-label="다음 페이지">→</button></div></div>
+      <div class="viewer-toolbar"><div><h1 id="pageTitle">페이지 불러오는 중</h1><p>글자·그림·빈칸을 누르면 관련 단어나 정답을 천천히 읽어 줍니다.</p></div><div class="pager"><button id="prevButton" type="button" aria-label="이전 페이지">←</button><span id="pageCount">- / -</span><button id="nextButton" type="button" aria-label="다음 페이지">→</button></div></div>
       <div id="pageFrame" class="page-frame"><img id="pageImage" alt="워크북 페이지" decoding="async"><div id="textLayer" class="text-layer"></div></div>
     </section>
-    <aside class="reading-panel" aria-label="읽기 도구"><div class="panel-top"><span class="eyebrow">LISTEN & LEARN</span><h2>듣고 따라 읽기</h2><p>페이지의 파란 테두리 부분을 누르거나 아래에서 문장을 선택하세요.</p></div><div id="activeText" class="active-text" aria-live="polite">읽을 글자를 선택해 주세요.</div><label for="textEdit">인식된 글자 수정</label><textarea id="textEdit" rows="3" placeholder="OCR이 틀렸다면 여기서 고쳐 읽어 보세요."></textarea><button id="speakButton" class="speak-button" type="button">▶ 다시 듣기</button><h3>이 페이지의 읽을 거리</h3><div id="textList" class="text-list"></div><p class="note">스캔본 자동 인식 결과이므로 일부 단어가 틀릴 수 있습니다. 준비된 음성은 80% 속도와 120% 증폭으로 재생됩니다. 수정한 글자는 브라우저 음성으로 읽으며 브라우저 제한에 따라 최대 100% 음량입니다.</p></aside>
+    <aside class="reading-panel" aria-label="읽기 도구"><div class="panel-top"><span class="eyebrow">LISTEN & LEARN</span><h2>듣고 따라 읽기</h2><p>글자, 그림 또는 주황색 빈칸을 누르세요. 적혀 있지 않은 답도 들을 수 있습니다.</p></div><div id="activeText" class="active-text" aria-live="polite">읽을 글자를 선택해 주세요.</div><label for="textEdit">읽을 글자 수정</label><textarea id="textEdit" rows="3" placeholder="다른 답을 듣고 싶다면 여기서 고쳐 읽어 보세요."></textarea><button id="speakButton" class="speak-button" type="button">▶ 다시 듣기</button><h3>이 페이지의 읽을 거리</h3><div id="textList" class="text-list"></div><p class="note">빈칸의 답은 그림과 문맥을 바탕으로 추정했습니다. 다른 답을 듣고 싶다면 위 글자를 수정하세요. 준비된 음성은 80% 속도와 120% 증폭으로 재생되며, 브라우저 음성은 브라우저 제한에 따라 최대 100% 음량입니다.</p></aside>
   </main>
   <footer>학습용 웹 교재 · 페이지 이미지와 OCR 텍스트를 함께 확인하세요.</footer>
+  <script src="reading-map.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>

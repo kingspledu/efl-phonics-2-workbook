@@ -1,0 +1,15 @@
+.picture-hotspot {
+  border: 1px dashed #db883d;
+  background: #f0a04b0c;
+}
+.picture-hotspot:hover, .picture-hotspot.active {
+  border: 2px solid #ec812e;
+  background: #ffdd6355;
+}
+.answer-hotspot {
+  border: 2px dashed #e27816;
+  background: #ffcb6240;
+}
+.answer-hotspot:hover, .answer-hotspot.active {
+  background: #ffb84077;
+}
